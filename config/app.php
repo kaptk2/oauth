@@ -17,6 +17,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'domain' => env('APP_DOMAIN', 'oauth.test'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -185,6 +187,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\FortifyServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -195,6 +198,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // Other service providers
+        App\Providers\SessionServiceProvider::class,
     ],
 
     /*
@@ -209,7 +214,6 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Redis' => Illuminate\Support\Facades\Redis::class,
     ])->toArray(),
-
 ];
