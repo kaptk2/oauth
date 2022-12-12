@@ -17,16 +17,13 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/';
 
-    /**
-     * Define your route model bindings, pattern filters, and other route configuration.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot():void
     {
         $this->configureRateLimiting();
+
+        $this->loadAuthRoutes();
 
         $this->routes(function () {
             Route::middleware('api')
@@ -38,15 +35,21 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
-     */
-    protected function configureRateLimiting()
+    protected function configureRateLimiting():void
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+    }
+
+    protected function loadAuthRoutes()
+    {
+        Route::group([
+            'namespace' => 'Laravel\Fortify\Http\Controllers',
+            'domain' => config('fortify.domain'),
+            'prefix' => config('fortify.prefix'),
+        ], function () {
+            $this->loadRoutesFrom(base_path('/vendor/laravel/fortify/routes/routes.php'));
         });
     }
 }
