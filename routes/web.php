@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
+use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
+use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +15,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
+})->middleware('auth');
+
+Route::withoutMiddleware([NeedsTenant::class, EnsureValidTenantSession::class])->group(function () {
+    // Socalite Routes
+    Route::get('/redirect/{service}', [LoginController::class, 'redirectToProvider'])->name('oauth.redirect');
+
+    Route::get('/callback/{service}', [LoginController::class, 'handleProviderCallback']);
 });
